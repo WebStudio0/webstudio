@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
       {
         hostname: "placehold.jp",
       },
+      {
+        hostname: "tf3yz7le5r.ufs.sh",
+      },
     ],
   },
 };
