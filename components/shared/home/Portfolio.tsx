@@ -1,23 +1,31 @@
 import { Button } from "@/components/ui/button";
 import db from "@/lib/prisma";
 import { ArrowRight } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import PortfolioGrid from "./PortfolioGrid";
 
 export async function PortfolioPreviewSection() {
   const portfolioItems = await db.portfolio.findMany({
-    select:{
+    select: {
       title: true,
       description: true,
-      category: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+          portfolios: true,
+        },
+      },
+      categoryId: true,
+      id: true,
+      createdAt: true,
+      updatedAt: true,
+
       image: true,
       link: true,
       technologies: true,
-
-
-    }
-  })
+    },
+  });
 
   return (
     <section className="section-padding bg-gradient-surface relative overflow-hidden">
@@ -41,7 +49,7 @@ export async function PortfolioPreviewSection() {
           </Button>
         </div>
 
-       <PortfolioGrid portfolioItems={portfolioItems} />
+        <PortfolioGrid portfolioItems={portfolioItems} />
       </div>
     </section>
   );
