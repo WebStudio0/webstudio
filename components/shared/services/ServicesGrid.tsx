@@ -37,23 +37,7 @@ const services = [
     price: "Mulai dari Rp 1.500.000",
     popular: true,
   },
-  {
-    icon: ShoppingCart,
-    title: "Toko Online",
-    description:
-      "E-commerce lengkap dengan sistem pembayaran, manajemen produk, dan fitur toko online modern untuk meningkatkan penjualan.",
-    features: [
-      "Unlimited produk",
-      "Multiple payment gateway",
-      "Inventory & order management",
-      "Customer account system",
-      "Shipping integration",
-      "Dashboard admin lengkap",
-    ],
-    duration: "14-30 hari kerja",
-    price: "Mulai dari Rp 8.000.000",
-    popular: false,
-  },
+ 
   {
     icon: Code,
     title: "Custom Website",
@@ -71,40 +55,7 @@ const services = [
     price: "Custom quote",
     popular: false,
   },
-  {
-    icon: RefreshCw,
-    title: "Redesign Website",
-    description:
-      "Perbarui tampilan website lama Anda dengan desain modern. Tingkatkan user experience dan konversi bisnis.",
-    features: [
-      "Analisis website existing",
-      "Modern UI/UX design",
-      "Improved performance",
-      "SEO optimization",
-      "Content migration",
-      "Mobile responsive",
-    ],
-    duration: "7-21 hari kerja",
-    price: "Mulai dari Rp 4.000.000",
-    popular: false,
-  },
-  {
-    icon: Settings,
-    title: "Maintenance",
-    description:
-      "Layanan perawatan dan update berkala untuk menjaga website Anda tetap aman, cepat, dan up-to-date.",
-    features: [
-      "Security updates",
-      "Regular backup",
-      "Performance monitoring",
-      "Content updates (4x/bulan)",
-      "Bug fixes",
-      "Priority support",
-    ],
-    duration: "Bulanan",
-    price: "Mulai dari Rp 500.000/bulan",
-    popular: false,
-  },
+
 ];
 
 const ServicesGrid = () => {
