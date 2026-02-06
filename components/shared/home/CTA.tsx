@@ -31,7 +31,7 @@ export function CTASection() {
                 className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow"
                 asChild>
                 <Link
-                  href="https://wa.me/6281234567890?text=Halo,%20saya%20tertarik%20dengan%20jasa%20pembuatan%20website"
+                  href="https://wa.me/6289672944224?text=Halo,%20saya%20tertarik%20dengan%20jasa%20pembuatan%20website"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="gap-2">

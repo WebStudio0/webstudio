@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { contactSchema } from "@/lib/validation/contactSchema";
+import { useForm } from "@tanstack/react-form";
 import { Clock, Mail, MapPin, Phone, Send } from "lucide-react";
-import React, { useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
-
 
 const contactInfo = [
   {
@@ -16,7 +17,7 @@ const contactInfo = [
     title: "WhatsApp",
     value: "+62 812 3456 7890",
     description: "Response dalam 1 jam",
-    action: "https://wa.me/6281234567890",
+    action: "https://wa.me/6281234567890 ",
   },
   {
     icon: Mail,
@@ -28,7 +29,7 @@ const contactInfo = [
   {
     icon: MapPin,
     title: "Lokasi",
-    value: "Jakarta, Indonesia",
+    value: "Semarang, Indonesia",
     description: "Remote-first studio",
     action: null,
   },
@@ -41,34 +42,68 @@ const contactInfo = [
   },
 ];
 
+// Field configuration untuk type safety dan maintainability
+const fieldConfig = [
+  {
+    name: "name" as const,
+    label: "Nama Lengkap",
+    required: true,
+    type: "text" as const,
+    placeholder: "John Doe",
+  },
+  {
+    name: "email" as const,
+    label: "Email",
+    required: true,
+    type: "email" as const,
+    placeholder: "john@example.com",
+  },
+  {
+    name: "phone" as const,
+    label: "Nomor WhatsApp",
+    required: false,
+    type: "tel" as const,
+    placeholder: "081234567890",
+  },
+  {
+    name: "subject" as const,
+    label: "Subjek",
+    required: true,
+    type: "text" as const,
+    placeholder: "Website UMKM",
+  },
+  {
+    name: "message" as const,
+    label: "Pesan",
+    required: true,
+    type: "textarea" as const,
+    placeholder: "Ceritakan kebutuhan website Anda...",
+    rows: 5,
+  },
+];
+
 const ContactForm = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    subject: "",
-    message: "",
+  const form = useForm({
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      subject: "",
+      message: "",
+    },
+    validators: {
+      onSubmit: contactSchema,
+    },
+    onSubmit: async ({ value }) => {
+      // Simulasi API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      console.log("Form submitted:", value);
+      toast.success("Pesan Anda telah terkirim!");
+      form.reset();
+    },
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    toast.success("Pesan Anda telah terkirim!");
-
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-    setIsSubmitting(false);
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
   return (
     <section className="section-padding pt-0">
       <div className="container-wide">
@@ -87,23 +122,28 @@ const ContactForm = () => {
             {contactInfo.map((info) => (
               <div
                 key={info.title}
-                className="flex items-start gap-4 p-4 bg-card rounded-xl border border-border hover:border-accent/30 transition-colors group">
+                className="flex items-start gap-4 p-4 bg-card rounded-xl border border-border hover:border-accent/30 transition-colors group"
+              >
                 <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
                   <info.icon className="w-5 h-5 text-accent" />
                 </div>
+
                 <div className="flex-1">
                   <h3 className="font-semibold mb-0.5">{info.title}</h3>
+
                   {info.action ? (
-                    <a
+                    <Link
                       href={info.action}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-accent hover:underline">
+                      className="text-accent hover:underline"
+                    >
                       {info.value}
-                    </a>
+                    </Link>
                   ) : (
                     <span className="text-foreground">{info.value}</span>
                   )}
+
                   <p className="text-sm text-muted-foreground mt-0.5">
                     {info.description}
                   </p>
@@ -111,7 +151,6 @@ const ContactForm = () => {
               </div>
             ))}
 
-            {/* Quick CTA */}
             <ContactCTA />
           </div>
 
@@ -125,90 +164,118 @@ const ContactForm = () => {
                 Isi form di bawah dan kami akan menghubungi Anda secepatnya.
               </p>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nama Lengkap *</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="h-12"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email *</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="john@example.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="h-12"
-                    />
-                  </div>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  form.handleSubmit();
+                }}
+                className="space-y-6"
+              >
+                <div className="space-y-6">
+                  {fieldConfig.map((config) => (
+                    <form.Field
+                      key={config.name}
+                      name={config.name}
+                    >
+                      {(field) => (
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor={field.name}
+                            className={
+                              config.required
+                                ? "after:content-['*'] after:ml-0.5 after:text-red-500"
+                                : ""
+                            }
+                          >
+                            {config.label}
+                          </Label>
+
+                          {config.type === "textarea" ? (
+                            <Textarea
+                              id={field.name}
+                              name={field.name}
+                              rows={config.rows}
+                              placeholder={config.placeholder}
+                              value={field.state.value}
+                              onBlur={field.handleBlur}
+                              onChange={(e) =>
+                                field.handleChange(e.target.value)
+                              }
+                              className="resize-none"
+                              aria-invalid={field.state.meta.errors.length > 0}
+                              aria-describedby={
+                                field.state.meta.errors.length > 0
+                                  ? `${field.name}-error`
+                                  : undefined
+                              }
+                            />
+                          ) : (
+                            <Input
+                              id={field.name}
+                              name={field.name}
+                              type={config.type}
+                              placeholder={config.placeholder}
+                              value={field.state.value}
+                              onBlur={field.handleBlur}
+                              onChange={(e) =>
+                                field.handleChange(e.target.value)
+                              }
+                              className="h-12"
+                              aria-invalid={field.state.meta.errors.length > 0}
+                              aria-describedby={
+                                field.state.meta.errors.length > 0
+                                  ? `${field.name}-error`
+                                  : undefined
+                              }
+                            />
+                          )}
+
+                          {field.state.meta.errors.length > 0 && (
+                            <p
+                              id={`${field.name}-error`}
+                              className="text-sm font-medium text-red-500"
+                              role="alert"
+                            >
+                              {field.state.meta.errors[0]?.message}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </form.Field>
+                  ))}
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Nomor WhatsApp</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      placeholder="081234567890"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="h-12"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="subject">Subjek *</Label>
-                    <Input
-                      id="subject"
-                      name="subject"
-                      placeholder="Website UMKM"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                      className="h-12"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="message">Pesan *</Label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    placeholder="Ceritakan kebutuhan website Anda..."
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={5}
-                    className="resize-none"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  variant="hero"
-                  size="lg"
-                  className="w-full"
-                  disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    "Mengirim..."
-                  ) : (
-                    <>
-                      Kirim Pesan
-                      <Send className="w-4 h-4 ml-2" />
-                    </>
+                <form.Subscribe
+                  selector={(state) => ({
+                    canSubmit: state.canSubmit,
+                    isSubmitting: state.isSubmitting,
+                    isValid: state.isValid,
+                  })}
+                >
+                  {({ canSubmit, isSubmitting, isValid }) => (
+                    <Button
+                      type="submit"
+                      variant="hero"
+                      size="lg"
+                      className="w-full"
+                      disabled={!canSubmit || isSubmitting}
+                      aria-busy={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <span className="flex items-center gap-2">
+                          <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                          Mengirim...
+                        </span>
+                      ) : (
+                        <>
+                          Kirim Pesan
+                          <Send className="w-4 h-4 ml-2" />
+                        </>
+                      )}
+                    </Button>
                   )}
-                </Button>
+                </form.Subscribe>
               </form>
             </div>
           </div>
